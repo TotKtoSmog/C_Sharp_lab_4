@@ -11,7 +11,8 @@ namespace C_Sharp_lab_4.Controllers
         public UserController(ILogger<UserController> logger) => _logger = logger;
         
         public IActionResult Index() => View();
-        
+        public IActionResult Registration() => View();
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() 
             => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
