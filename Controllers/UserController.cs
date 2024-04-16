@@ -1,21 +1,19 @@
-using C_Sharp_lab_4.Models;
+﻿using C_Sharp_lab_4.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace C_Sharp_lab_4.Controllers
 {
-    public class HomeController : Controller
+    public class UserController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<UserController> _logger;
 
-        public HomeController(ILogger<HomeController> logger) => _logger = logger;
-
+        public UserController(ILogger<UserController> logger) => _logger = logger;
+        
         public IActionResult Index() => View();
-
-        public IActionResult Privacy() => View();
-
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error() 
             => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
