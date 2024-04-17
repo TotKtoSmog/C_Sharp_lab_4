@@ -28,8 +28,8 @@
                 <td scope="row">@user.Password</td>
                 <td scope="row">@user.FIO</td>
                 <td scope="row">@(FIO[0])</td>
-                <td scope="row">@(FIO.Length > 2 ? FIO[1] : "Нет")</td>
-                <td scope="row">@(FIO.Length > 3 ? FIO[2] : "Нет")</td>
+                <td scope="row">@(FIO.Length > 1 ? FIO[1] : "Нет")</td>
+                <td scope="row">@(FIO.Length > 2 ? FIO[2] : "Нет")</td>
             </tr>
         }
     </tbody>
