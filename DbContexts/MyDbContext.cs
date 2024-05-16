@@ -8,9 +8,13 @@ namespace C_Sharp_lab_4.DbContexts
         : base(options)
         {
         }
+
+        MyDbContext()
+        {
+            Database.EnsureCreated();
+        }
         public virtual DbSet<User> Users { get; set; }
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //   => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=qwerty1234;Database=C_Sharp_lab_4_db;Pooling=true;SSL Mode=Prefer;Trust Server Certificate=true;");
+        public virtual DbSet<Message>? Message { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>(entity =>
@@ -28,8 +32,24 @@ namespace C_Sharp_lab_4.DbContexts
                 .HasColumnName("fio")
                 .HasMaxLength(120);
             });
+            modelBuilder.Entity<Message>(entity => {
+                entity.ToTable("messagedb");
+                entity.Property(e => e.Id)
+                .HasColumnName("id");
+                entity.Property(e => e.Id_Sender)
+                .HasColumnName("id_sender");
+                entity.Property(e => e.Id_Recipient)
+                .HasColumnName("id_recipient");
+                entity.Property(e => e.Hedder)
+                .HasColumnName("hedder");
+                entity.Property(e => e.TextMessage)
+                .HasColumnName("textmessage");
+                entity.Property(e => e.DateDispatch)
+                .HasColumnName("datedispatch");
+                entity.Property(e => e.Status)
+                .HasColumnName("status");
+            });
+
         }
-
-
     }
 }

@@ -1,22 +1,72 @@
-﻿@model User
-@{
+﻿@{
     ViewData["Title"] = "Личная страница";
 }
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <div class="text-center">
-    <h1 class="display-4">Добро пожаловать @Model.FIO</h1>
+    <h1 class="display-4">Добро пожаловать @ViewData["name"]</h1>
 </div>
 
 <div class="d-flex align-items-start">
     <div class="nav flex-column nav-tabs me-3" id="nav-tab" role="tablist" aria-orientation="vertical">
-        <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Home</button>
-        <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Profile</button>
-        <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</button>
-        <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</button>
+        <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Входящие</button>
+        <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Написать сообщение</button>
     </div>
     <div class="tab-content" id="v-pills-tabContent">
-        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">1</div>
-        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">2</div>
-        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">3</div>
-        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">4</div>
+        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+            <h5>Входящие сообщения</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">id отправителя</th>
+                        <th scope="col">Тема</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Дата</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mes in Model)
+                    {
+                        <tr class="@(mes.Status == true ? "seen-true" : "seen-false")">
+                            <td scope="row">
+                                <a href="#" data-id="@mes.Id" onClick='alert("@mes.TextMessage")'>@mes.Hedder</a>
+
+                            </td>
+                            <td scope="row">@mes.Hedder</td>
+                            <td scope="row">@mes.Status</td>
+                            <td scope="row">@mes.Date</td>
+                        </tr>
+                    }
+                </tbody>
+                </table>
+
+        </div>
+        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+            <h3>Написать сообщение</h3>
+        </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        let unreadLines = document.querySelectorAll(".seen-false");
+        for (let i = 0; i < unreadLines.length; i++) {
+            unreadLines[i].style.background = '#0000';
+        }
+
+        let readLines = document.querySelectorAll(".seen-true");
+        for (let i = 0; i < readLines.length; i++) {
+            readLines[i].style.background = 'green';
+        }
+
+        $('table a').click(function (e) {
+            e.preventDefault();
+            var messageId = $(this).attr('data-id');
+            console.log(messageId);
+            $.post('/User/MarkAsRead/' + messageId, function () {
+                $(this).closest('tr').removeClass('seen-false').addClass('seen-true').css('background-color', 'white');
+            }.bind(this));
+        });
+    });
+</script>

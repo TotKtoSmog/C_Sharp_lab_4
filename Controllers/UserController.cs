@@ -3,6 +3,7 @@ using C_Sharp_lab_4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace C_Sharp_lab_4.Controllers
 {
@@ -48,7 +49,23 @@ namespace C_Sharp_lab_4.Controllers
             var _id = Request.Cookies[KeyId];
             if (_id == null) return RedirectToAction("Login");
             if(id.ToString() != _id) return RedirectToAction("Аccount", new { controller = "User", action = "Аccount", id = _id });
-            return View(await _context.Users.FindAsync(int.Parse(_id)));
+
+            User _user = await _context.Users.FindAsync(int.Parse(_id));
+            ViewData["name"] = _user.FIO;
+
+            var message = (from msg in _context.Message.ToList()
+                           where msg.Id_Sender == _user.Id
+                           select msg).ToList().Select(msg => new MessageModel
+                           {
+                                Id = msg.Id,
+                                Recipient = _context.Users.ToList().First(u => u.Id == msg.Id_Recipient).Login,
+                                Hedder = msg.Hedder,
+                                TextMessage = msg.TextMessage,
+                                Date = msg.DateDispatch,
+                                Status = msg.Status
+                           }).ToList().OrderByDescending(m => m.Date);
+
+            return View(message);
         }
         public async Task<IActionResult> AllUsers()
             => View(await _context.Users.ToListAsync());
@@ -106,5 +123,22 @@ namespace C_Sharp_lab_4.Controllers
         }
         public IActionResult Error() 
             => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+
+        [HttpPost]
+        public IActionResult MarkAsRead(int id)
+        {
+            var message = _context.Message.Find(id);
+            if (message == null)
+            {
+                return NotFound();
+            }
+
+            message.Status = false;
+            _context.Message.Update(message);
+            _context.SaveChanges();
+
+            return NoContent();
+        }
+
     }
 }
