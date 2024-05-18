@@ -39,26 +39,25 @@ namespace C_Sharp_lab_4.Controllers
                 if(_user != null)
                 {
                     SaveCooKie(_user);
-                    return RedirectToAction("Аccount", new { controller = "User", action = "Аccount", id = _user.Id });
+                    return RedirectToAction("Аccount", new { controller = "User", action = "Аccount"});
                 }
             }
             return View(RM);
         }
-        public async Task<IActionResult> Аccount(int id)
+        public async Task<IActionResult> Аccount(FilterVM filterVM)
         {
             var _id = Request.Cookies[KeyId];
             if (_id == null) return RedirectToAction("Login");
-            if(id.ToString() != _id) return RedirectToAction("Аccount", new { controller = "User", action = "Аccount", id = _id });
-
             User _user = await _context.Users.FindAsync(int.Parse(_id));
+
             ViewData["name"] = _user.FIO;
 
             var message = (from msg in _context.Message.ToList()
-                           where msg.Id_Sender == _user.Id
-                           select msg).ToList().Select(msg => new MessageModel
+                           where msg.Id_Recipient == _user.Id
+                           select msg).ToList().Where(msg => msg.Status || filterVM.Status != "on").Select(msg => new MessageModel
                            {
                                 Id = msg.Id,
-                                Recipient = _context.Users.ToList().First(u => u.Id == msg.Id_Recipient).Login,
+                                Sender = _context.Users.ToList().First(u => u.Id == msg.Id_Sender).Login,
                                 Hedder = msg.Hedder,
                                 TextMessage = msg.TextMessage,
                                 Date = msg.DateDispatch,
@@ -67,6 +66,26 @@ namespace C_Sharp_lab_4.Controllers
 
             return View(message);
         }
+        [HttpPost]
+        public IActionResult Аccount (SendMessageModel model)
+        {
+            var _id = Request.Cookies[KeyId];
+            if (_id == null) return RedirectToAction("Login");
+            var receiverUser = (from usr in _context.Users.ToList()
+                                where usr.Login == model.Recipient
+                                select usr).Take(1).ToList().FirstOrDefault(u => true, null);
+            _context.Message.Add(new Message
+            {
+                Id_Sender = int.Parse(_id),
+                Id_Recipient = receiverUser.Id,
+                Hedder = model.Hedder, 
+                TextMessage = model.TextMessage,
+                DateDispatch = DateTime.UtcNow,
+                Status = true
+            });
+            _context.SaveChanges();
+            return RedirectToAction("Аccount", new { controller = "User", action = "Аccount" });
+        }
         public async Task<IActionResult> AllUsers()
             => View(await _context.Users.ToListAsync());
         public async Task<IActionResult> Login(User userModel)
@@ -74,7 +93,7 @@ namespace C_Sharp_lab_4.Controllers
             var login = Request.Cookies[KeyLogin];
             var password = Request.Cookies[KeyPassword];
             User _user = await AutoLogin();
-            if (_user != null) return RedirectToAction("Аccount", new { controller = "User", action = "Аccount", id = _user.Id });
+            if (_user != null) return RedirectToAction("Аccount", new { controller = "User", action = "Аccount"});
 
             ModelState.Remove("id");
             ModelState.Remove("fio");
@@ -85,7 +104,7 @@ namespace C_Sharp_lab_4.Controllers
                 if (_user != null)
                 {
                     SaveCooKie(_user);
-                    return RedirectToAction("Аccount", new { controller = "User", action = "Аccount", id = _user.Id });
+                    return RedirectToAction("Аccount", new { controller = "User", action = "Аccount"});
                 }
                 ModelState.AddModelError("", "Неверные логин или пароль");
             }

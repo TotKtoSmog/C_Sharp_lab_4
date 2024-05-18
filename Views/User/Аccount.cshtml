@@ -17,33 +17,67 @@
         <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
             <h5>Входящие сообщения</h5>
             <table class="table">
+                <div class="d-flex justify-content-evenly">
+                    <form method="get" asp-action="Аccount" asp-controller="User">
+                        <label class="control-label">Фильтровать</label>
+                        <input type="checkbox" name="Status" />
+                        <button type="submit">Сохранить</button>
+                    </form>
+                </div>
                 <thead>
                     <tr>
-                        <th scope="col">id отправителя</th>
+                        <th scope="col">Отправитель</th>
                         <th scope="col">Тема</th>
                         <th scope="col">Статус</th>
                         <th scope="col">Дата</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (var mes in Model)
-                    {
-                        <tr class="@(mes.Status == true ? "seen-true" : "seen-false")">
-                            <td scope="row">
-                                <a href="#" data-id="@mes.Id" onClick='alert("@mes.TextMessage")'>@mes.Hedder</a>
 
-                            </td>
-                            <td scope="row">@mes.Hedder</td>
-                            <td scope="row">@mes.Status</td>
-                            <td scope="row">@mes.Date</td>
-                        </tr>
+                <tbody>
+                    @{
+                        int count = 0;
+                        @foreach (var mes in Model)
+                        {
+                            count++;
+                            <tr class="@(mes.Status == true ? "seen-true" : "seen-false")">
+                                <td scope="row">
+                                    <a href="#" data-id="@mes.Id" onClick='alert("@mes.TextMessage")'>@mes.Sender</a>
+
+                                </td>
+                                <td scope="row">@mes.Hedder</td>
+                                <td scope="row">@(mes.Status == true ? "Новое" : "Прочитанное")</td>
+                                <td scope="row">@mes.Date</td>
+                            </tr>
+                        }
+                        if (count == 0)
+                        {
+                            ViewData["Count_Mess"] = "Пусто >:^(";
+                        }
+                        else
+                        {
+                            ViewData["Count_Mess"] = "";
+                        }
                     }
                 </tbody>
                 </table>
-
+            <h6>@ViewData["Count_Mess"]</h6>
         </div>
         <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
-            <h3>Написать сообщение</h3>
+            <h5>Написать сообщение</h5>
+            <div>
+                <form method="post" asp-action="Аccount" asp-controller="User">
+                    <label class="control-label">Кому:</label>
+                    <input class="form-control" name="Recipient" />
+                    <br />
+                    <label class="control-label">Заголовок:</label>
+                    <input class="form-control" name="Hedder" />
+                    <br />
+                    <label class="control-label">Текст:</label>
+                    <textarea class="form-control" name="TextMessage"></textarea>
+                    <br />
+                    <button type="submit">Send</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
