@@ -32,8 +32,16 @@ namespace C_Sharp_lab_4.Controllers
             ModelState.Remove("id");
             if(ModelState.IsValid && _context != null)
             {
-                if(_context.Users.Any(u => u.Login == RM.Login)) return View();
-
+                if (_context.Users.Any(u => u.Login == RM.Login))
+                {
+                    ViewData["Registration_Error"] = "Пользователь с такил логином уже существует";
+                    return View(RM);
+                }
+                if(RM.Password != RM.AcceptPassword)
+                {
+                    ViewData["Registration_Error"] = "Пороли не воспадают";
+                    return View(RM);
+                }
                 await _context.Users.AddAsync(RM);
                 await _context.SaveChangesAsync();
 
@@ -91,16 +99,19 @@ namespace C_Sharp_lab_4.Controllers
             var receiverUser = (from usr in _context.Users.ToList()
                                 where usr.Login == model.Recipient
                                 select usr).Take(1).ToList().FirstOrDefault(u => true, null);
-            _context.Message.Add(new Message
+            if(receiverUser != null)
             {
-                Id_Sender = int.Parse(_id),
-                Id_Recipient = receiverUser.Id,
-                Hedder = model.Hedder, 
-                TextMessage = model.TextMessage,
-                DateDispatch = DateTime.UtcNow,
-                Status = true
-            });
-            _context.SaveChanges();
+                _context.Message.Add(new Message
+                {
+                    Id_Sender = int.Parse(_id),
+                    Id_Recipient = receiverUser.Id,
+                    Hedder = model.Hedder,
+                    TextMessage = model.TextMessage,
+                    DateDispatch = DateTime.UtcNow,
+                    Status = true
+                });
+                _context.SaveChanges();
+            }
             return RedirectToAction("Аccount", new { controller = "User", action = "Аccount" });
         }
         public async Task<IActionResult> AllUsers()
@@ -123,7 +134,7 @@ namespace C_Sharp_lab_4.Controllers
                     SaveCooKie(_user);
                     return RedirectToAction("Аccount", new { controller = "User", action = "Аccount"});
                 }
-                ModelState.AddModelError("", "Неверные логин или пароль");
+                ViewData["Аuthorization_Error"] = "Неверные логин или пароль";
             }
             return View(userModel);
         }

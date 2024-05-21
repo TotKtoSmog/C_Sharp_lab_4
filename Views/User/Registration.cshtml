@@ -4,6 +4,10 @@
 }
 <div class="text-center">
     <h1 class="display-4">Регистрация</h1>
+    <div class=" @(ViewData["Registration_Error"] != null ? "alert alert-danger" : "collapse")">
+        <strong>Ошибка</strong> @ViewData["Registration_Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 </div>
 <form asp-action="Registration">
     <div class="form-group">

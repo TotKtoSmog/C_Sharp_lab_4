@@ -5,6 +5,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Авторизация</h1>
+    <div class=" @(ViewData["Аuthorization_Error"] != null ? "alert alert-danger" : "collapse")">
+        <strong>Ошибка</strong> @ViewData["Аuthorization_Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 </div>
 <form asp-action="Login">
     <div class="form-group">

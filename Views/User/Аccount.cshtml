@@ -52,7 +52,6 @@
                             <tr class="@(mes.Status == true ? "seen-true" : "seen-false")">
                                 <td scope="row">
                                     <a href="#" data-id="@mes.Id" onClick='alert("@mes.TextMessage")'>@mes.Sender</a>
-
                                 </td>
                                 <td scope="row">@mes.Hedder</td>
                                 <td scope="row">@(mes.Status == true ? "Новое" : "Прочитанное")</td>
@@ -74,6 +73,7 @@
         </div>
         <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
             <h5>Написать сообщение</h5>
+            
             <div>
                 <form method="post" asp-action="Аccount" asp-controller="User">
                     <label class="control-label">Кому:</label>
