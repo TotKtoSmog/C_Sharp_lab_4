@@ -30,8 +30,12 @@
                 </div>
                 <thead>
                     <tr>
-                        <th>Отправитель</th>
-                        <th>Тема</th>
+                        <th>
+                            <a asp-action="Аccount" asp-controller="User" asp-route-filterVM.SenderSort="@ViewBag.SenderSort">Отправитель</a>
+                        </th>
+                        <th>
+                            <a asp-action="Аccount" asp-controller="User" asp-route-filterVM.HedderSort="@ViewBag.HeddrSort">Тема</a>
+                            </th>
                         <th>Статус</th>
                         <th>
                             <a asp-action="Аccount" asp-controller="User" asp-route-filterVM.DateSort="@ViewBag.DataSort">Дата</a>

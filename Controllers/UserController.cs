@@ -53,8 +53,10 @@ namespace C_Sharp_lab_4.Controllers
             
             User _user = await _context.Users.FindAsync(int.Parse(_id));
             ViewData["name"] = _user.FIO;
-
+            ViewData["SenderSort"] = filterVM.SenderSort == "Sender" ? "Sender_desc" : "Sender";
+            ViewData["HeddrSort"] = filterVM.HedderSort == "hedder" ? "hedder_desc" : "hedder";
             ViewData["DataSort"] = filterVM.DateSort == "date" ? "date_desc" : "date";
+
             var message = (from msg in _context.Message.ToList()
                            where msg.Id_Recipient == _user.Id
                            select msg).ToList().Where(msg => msg.Status || filterVM.Status != "on").Select(msg => new MessageModel
@@ -69,7 +71,15 @@ namespace C_Sharp_lab_4.Controllers
 
             if (filterVM.DateSort == "date")
                 message = message.OrderBy(m => m.Date);
-            
+            else if(filterVM.HedderSort == "hedder")
+                message = message.OrderBy(m => m.Hedder);
+            else if (filterVM.HedderSort == "hedder_desc")
+                message = message.OrderByDescending(m => m.Hedder);
+            else if (filterVM.HedderSort == "Sender")
+                message = message.OrderBy(m => m.Sender);
+            else if (filterVM.HedderSort == "Sender_desc")
+                message = message.OrderByDescending(m => m.Sender);
+
             return View(message);
         }
         [HttpPost]
