@@ -2,7 +2,9 @@
 using C_Sharp_lab_4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using System.Diagnostics;
+using static C_Sharp_lab_4.Models.FilterVM;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace C_Sharp_lab_4.Controllers
@@ -48,10 +50,11 @@ namespace C_Sharp_lab_4.Controllers
         {
             var _id = Request.Cookies[KeyId];
             if (_id == null) return RedirectToAction("Login");
+            
             User _user = await _context.Users.FindAsync(int.Parse(_id));
-
             ViewData["name"] = _user.FIO;
 
+            ViewData["DataSort"] = filterVM.DateSort == "date" ? "date_desc" : "date";
             var message = (from msg in _context.Message.ToList()
                            where msg.Id_Recipient == _user.Id
                            select msg).ToList().Where(msg => msg.Status || filterVM.Status != "on").Select(msg => new MessageModel
@@ -64,6 +67,9 @@ namespace C_Sharp_lab_4.Controllers
                                 Status = msg.Status
                            }).ToList().OrderByDescending(m => m.Date);
 
+            if (filterVM.DateSort == "date")
+                message = message.OrderBy(m => m.Date);
+            
             return View(message);
         }
         [HttpPost]
@@ -71,6 +77,7 @@ namespace C_Sharp_lab_4.Controllers
         {
             var _id = Request.Cookies[KeyId];
             if (_id == null) return RedirectToAction("Login");
+            
             var receiverUser = (from usr in _context.Users.ToList()
                                 where usr.Login == model.Recipient
                                 select usr).Take(1).ToList().FirstOrDefault(u => true, null);

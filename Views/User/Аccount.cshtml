@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Личная страница";
 }
-
+@model IEnumerable<MessageModel>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <div class="text-center">
@@ -16,20 +16,26 @@
     <div class="tab-content" id="v-pills-tabContent">
         <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
             <h5>Входящие сообщения</h5>
-            <table class="table">
+            <table class="table table table-hover border-primary">
+                <label class="control-label">Фильтры</label>
                 <div class="d-flex justify-content-evenly">
+
                     <form method="get" asp-action="Аccount" asp-controller="User">
-                        <label class="control-label">Фильтровать</label>
-                        <input type="checkbox" name="Status" />
-                        <button type="submit">Сохранить</button>
+                        <div>
+                            <label class="control-label">Новые сообщения</label>
+                            <input type="checkbox" name="Status" />
+                        </div>
+                        <button type="submit">Применить</button>
                     </form>
                 </div>
                 <thead>
                     <tr>
-                        <th scope="col">Отправитель</th>
-                        <th scope="col">Тема</th>
-                        <th scope="col">Статус</th>
-                        <th scope="col">Дата</th>
+                        <th>Отправитель</th>
+                        <th>Тема</th>
+                        <th>Статус</th>
+                        <th>
+                            <a asp-action="Аccount" asp-controller="User" asp-route-filterVM.DateSort="@ViewBag.DataSort">Дата</a>
+                        </th>
                     </tr>
                 </thead>
 
@@ -74,8 +80,8 @@
                     <br />
                     <label class="control-label">Текст:</label>
                     <textarea class="form-control" name="TextMessage"></textarea>
-                    <br />
-                    <button type="submit">Send</button>
+                    <br/>
+                    <button type="submit">Отправить</button>
                 </form>
             </div>
         </div>
@@ -94,7 +100,7 @@
             readLines[i].style.background = 'green';
         }
 
-        $('table a').click(function (e) {
+        $('table tbody a').click(function (e) {
             e.preventDefault();
             var messageId = $(this).attr('data-id');
             console.log(messageId);
